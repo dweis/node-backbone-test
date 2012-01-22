@@ -1,2 +1,51 @@
-h1= title
-p Welcome to #{title}
+button#add-box Add Box
+ul#boxes
+
+script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js')
+script(src='http://ajax.cdnjs.com/ajax/libs/underscore.js/1.1.4/underscore-min.js')
+script(src='http://ajax.cdnjs.com/ajax/libs/backbone.js/0.3.3/backbone-min.js')
+script
+  (function($){
+    console.log('Setting up backbone...');
+
+    var Box = Backbone.Model.extend({
+      color: null
+    });
+
+    var Boxes = Backbone.Collection.extend({
+      initialize: function(models, options) {
+        this.bind('add', options.view.addBoxDiv);
+      }
+    });
+
+    var AppView = Backbone.View.extend({
+      el: $('body'),
+      initialize: function() {
+        this.boxes = new Boxes(null, { view: this });
+      },
+      events: {
+        'click #add-box': 'addBox'
+      },
+      addBox: function() {
+        var random = Math.floor(Math.random() * 3)
+
+        var color = null;
+
+        switch (random) {
+          case 1: color = 'green'; break;
+          case 2: color = 'blue'; break
+          default: color = 'red'; break;
+        }
+
+        var boxModel = new Box({ color: color });
+
+        this.boxes.add(boxModel);
+      },
+      addBoxDiv: function(model) {
+        $('#boxes').append('<div class="' + model.get('color') + '">' +
+            model.get('color') + '</div>');
+      }
+    });
+
+    var appView = new AppView;
+  })(jQuery);
