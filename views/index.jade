@@ -5,9 +5,11 @@ script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js')
 script(src='http://ajax.cdnjs.com/ajax/libs/underscore.js/1.1.4/underscore-min.js')
 script(src='http://ajax.cdnjs.com/ajax/libs/backbone.js/0.3.3/backbone-min.js')
 script(src='/socket.io/socket.io.js')
+
 script
   (function($){
     var Tweet = Backbone.Model.extend({
+      id: null,
       username: null,
       photo: null,
       text: null
@@ -16,11 +18,13 @@ script
     var Tweets = Backbone.Collection.extend({
       initialize: function(models, options) {
         this.bind('add', options.view.addTweetDiv);
-      },
-      events: {
-        'add': function(model) {
-              console.log(model);
+        this.bind('remove', options.view.removeTweetDiv);
+
+        this.bind('add', function(model) {
+          if (this.length > 6) {
+            this.remove(this.at(0));
           }
+        });
       }
     });
 
@@ -32,13 +36,16 @@ script
       events: {
       },
       addTweetDiv: function(model) {
-        var $div = $('<div>');
+        var $div = $('<div>', { id: 'tweet_' + model.get('id') });
 
         $div.append('<img src="' + model.get('photo') + '"/>');
         $div.append('<b>' + model.get('username') + ':</b>');
         $div.append(model.get('text'));
 
         $('#boxes').prepend($div);
+      },
+      removeTweetDiv: function(model) {
+        $('#boxes').find('#tweet_' + model.get('id')).remove();
       }
     });
 
@@ -47,7 +54,7 @@ script
     var socket = io.connect('http://localhost');
 
     socket.on('tweet', function (tweet) {
-      var tweetModel = new Tweet({ username: tweet.user.screen_name, photo: tweet.user.profile_image_url, text: tweet.text });
+      var tweetModel = new Tweet({ id: tweet.id, username: tweet.user.screen_name, photo: tweet.user.profile_image_url, text: tweet.text });
 
       appView.tweets.add(tweetModel);
     });
