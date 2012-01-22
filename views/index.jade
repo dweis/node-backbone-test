@@ -1,51 +1,55 @@
-button#add-box Add Box
+h1 Toronto Tweet Stream
 ul#boxes
 
 script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js')
 script(src='http://ajax.cdnjs.com/ajax/libs/underscore.js/1.1.4/underscore-min.js')
 script(src='http://ajax.cdnjs.com/ajax/libs/backbone.js/0.3.3/backbone-min.js')
+script(src='/socket.io/socket.io.js')
 script
   (function($){
-    console.log('Setting up backbone...');
-
-    var Box = Backbone.Model.extend({
-      color: null
+    var Tweet = Backbone.Model.extend({
+      username: null,
+      photo: null,
+      text: null
     });
 
-    var Boxes = Backbone.Collection.extend({
+    var Tweets = Backbone.Collection.extend({
       initialize: function(models, options) {
-        this.bind('add', options.view.addBoxDiv);
+        this.bind('add', options.view.addTweetDiv);
+      },
+      events: {
+        'add': function(model) {
+              console.log(model);
+          }
       }
     });
 
     var AppView = Backbone.View.extend({
       el: $('body'),
       initialize: function() {
-        this.boxes = new Boxes(null, { view: this });
+        this.tweets = new Tweets(null, { view: this });
       },
       events: {
-        'click #add-box': 'addBox'
       },
-      addBox: function() {
-        var random = Math.floor(Math.random() * 3)
+      addTweetDiv: function(model) {
+        var $div = $('<div>');
 
-        var color = null;
+        $div.append('<img src="' + model.get('photo') + '"/>');
+        $div.append('<b>' + model.get('username') + ':</b>');
+        $div.append(model.get('text'));
 
-        switch (random) {
-          case 1: color = 'green'; break;
-          case 2: color = 'blue'; break
-          default: color = 'red'; break;
-        }
-
-        var boxModel = new Box({ color: color });
-
-        this.boxes.add(boxModel);
-      },
-      addBoxDiv: function(model) {
-        $('#boxes').append('<div class="' + model.get('color') + '">' +
-            model.get('color') + '</div>');
+        $('#boxes').prepend($div);
       }
     });
 
     var appView = new AppView;
+
+    var socket = io.connect('http://localhost');
+
+    socket.on('tweet', function (tweet) {
+      var tweetModel = new Tweet({ username: tweet.user.screen_name, photo: tweet.user.profile_image_url, text: tweet.text });
+
+      appView.tweets.add(tweetModel);
+    });
+
   })(jQuery);

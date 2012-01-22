@@ -3,10 +3,12 @@
  * Module dependencies.
  */
 
-var express = require('express')
+var config = require('config')
+  , express = require('express')
   , routes = require('./routes')
 
-var app = module.exports = express.createServer();
+var app = module.exports = express.createServer()
+  , io = require('socket.io').listen(app);
 
 // Configuration
 
@@ -30,6 +32,20 @@ app.configure('production', function(){
 // Routes
 
 app.get('/', routes.index);
+
+var twitter = require('ntwitter');
+
+var twit = new twitter(config.twitter);
+
+twit.stream('statuses/filter', {'locations':'-79.6393, 43.5849, -79.1156, 43.8554'}, function(stream) {
+  stream.on('data', function (data) {
+    io.sockets.emit('tweet', data);
+  });
+});
+
+io.sockets.on('connection', function(socket) {
+  console.log('socket connected...');
+});
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
