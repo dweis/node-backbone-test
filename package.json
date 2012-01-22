@@ -8,5 +8,7 @@
     , "ntwitter": "0.2.9-2"
     , "socket.io": "0.8.7"
     , "config": "0.4.10"
+    , "bootstrap-stylus": "0.2.0"
+    , "stylus": "0.22.6"
   }
 }

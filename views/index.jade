@@ -1,5 +1,32 @@
-h1 Toronto Tweet Stream
-ul#boxes
+.topbar
+  .topbar-inner
+    .container-fluid
+      a.brand(href="#") Toronto Tweet Stream
+      ul.nav
+        li
+         a(href="#") one
+      p.pull-right 
+        a(href="#") test
+
+.container-fluid
+  .sidebar
+    .well
+      h5 Sidebar
+
+  .content
+    .hero-unit
+      p Here is what's going on in Toronto, Ontario, Canada.
+
+    .row
+      .span6
+        #boxes
+      .span5
+        | column 2
+      .span5
+        | column 3
+
+    footer
+      | &copy; 2012 Derrick Weis
 
 script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js')
 script(src='http://ajax.cdnjs.com/ajax/libs/underscore.js/1.1.4/underscore-min.js')

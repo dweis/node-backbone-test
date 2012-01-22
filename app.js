@@ -7,6 +7,9 @@ var config = require('config')
   , express = require('express')
   , routes = require('./routes')
 
+var bootstrap = require('bootstrap-stylus'),
+       stylus = require('stylus');
+
 var app = module.exports = express.createServer()
   , io = require('socket.io').listen(app);
 
@@ -28,6 +31,17 @@ app.configure('development', function(){
 app.configure('production', function(){
   app.use(express.errorHandler()); 
 });
+
+function compile(str, path) {
+  return stylus(str)
+    .set('filename', path)
+    .use(bootstrap());
+}
+
+app.use(stylus.middleware({
+  src: __dirname + '/public',
+  compile: compile
+}));
 
 // Routes
 
