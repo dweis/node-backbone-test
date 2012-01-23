@@ -6,7 +6,7 @@
         small Here is what's going on in Toronto, Ontario, Canada.
 
     .row
-      .span10
+      .span14
         #boxes
 
     footer
@@ -65,7 +65,12 @@ script
     var socket = io.connect('http://localhost');
 
     socket.on('tweet', function (tweet) {
-      var tweetModel = new Tweet({ id: tweet.id, username: tweet.user.screen_name, photo: tweet.user.profile_image_url, text: tweet.text });
+      var tweetModel = new Tweet({
+        id: tweet.id,
+        username: tweet.user.screen_name,
+        photo: tweet.user.profile_image_url,
+        text: tweet.text 
+      });
 
       appView.tweets.add(tweetModel);
     });
