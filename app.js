@@ -5,10 +5,10 @@
 
 var config = require('config')
   , express = require('express')
-  , routes = require('./routes')
+  , routes = require('./routes');
 
-var bootstrap = require('bootstrap-stylus'),
-       stylus = require('stylus');
+var bootstrap = require('bootstrap-stylus')
+  , stylus = require('stylus');
 
 var app = module.exports = express.createServer()
   , io = require('socket.io').listen(app);
